@@ -69,6 +69,14 @@ O projeto original serviu como base, e ao longo de maio novas funcionalidades fo
 
 ---
 
+## 🧪 Testar o App Online (Versão Web via FlutLab)
+Se quiser apenas ver o app rodando direto no navegador, você pode acessar a versão adaptada para o emulador web do FlutLab:
+
+👉 Acesse o [TechTaste v2 no FlutLab](https://flutlab.io/editor/856b5b76-28f7-4a5a-a173-ed3c70fa72e1)
+(aguarde alguns segundos enquanto o ambiente é carregado)
+
+ ![flutlab_screen](assets/screenshots/flutlab_screenshot.JPG)
+
 ## ▶️ Como executar o projeto localmente
 
 ```bash
