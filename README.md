@@ -12,7 +12,7 @@ O projeto original serviu como base, e ao longo de maio novas funcionalidades fo
 
 ---
 
-## ✅ Avanços da Versão 2.0
+## 📱🥗 Avanços da Versão 2.0
 
 ### ✅ Reestruturação do Projeto
 - Modularização da estrutura de arquivos e pastas (`models`, `providers`, `screens`, `widgets`)
@@ -83,3 +83,23 @@ flutter pub get
 
 # Execute o app
 flutter run
+
+```
+---
+
+## 📚 Documentação Completa
+A documentação detalhada do projeto está disponível [aqui](https://github.com/daniamorimdesa/TechTaste-foodapp-v2/main/docs).
+
+---
+
+## 📄 Licença
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+---
+
+##   Autora
+```
+Daniela Amorim de Sá
+Engenheira Eletrônica | Sistemas Embarcados & IoT  
+Projeto desenvolvido como parte da Imersão Mobile da Alura (abril - 2025).
+```
