@@ -97,7 +97,7 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ---
 
-##   Autora
+##  👩🏻‍💻 Autora
 ```
 Daniela Amorim de Sá
 Engenheira Eletrônica | Sistemas Embarcados & IoT  
