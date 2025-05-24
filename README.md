@@ -96,7 +96,7 @@ flutter run
 ---
 
 ## 📚 Documentação Completa
-A documentação detalhada do projeto está disponível [aqui](https://github.com/daniamorimdesa/TechTaste-foodapp-v2/main/docs).
+A documentação detalhada do projeto está disponível [aqui](docs).
 
 ---
 
