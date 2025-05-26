@@ -296,3 +296,77 @@ class CashPaymentInfo {
 }
 
 ```
+---
+## `restaurant.dart`
+
+### Funcionalidade
+Representa um restaurante no aplicativo, com informações visuais, localização, avaliação, categorias e seus respectivos pratos.
+
+### Decisão técnica
+- Modelo robusto com todos os dados necessários para exibir e filtrar restaurantes;
+- Atributo `dishes` inclui uma lista de objetos `Dish`, promovendo composição entre modelos;
+- Métodos `toMap` e `fromMap` permitem persistência ou transmissão dos dados;
+- Flexível para expansão futura (por exemplo: horários de funcionamento, localização geográfica etc.).
+
+### Código comentado
+
+```dart
+import 'package:myapp/model/dish.dart';
+
+// Classe que representa um restaurante no app
+class Restaurant {
+  String id;               // Identificador único do restaurante
+  String imagePath;        // Caminho da imagem do restaurante
+  String name;             // Nome do restaurante
+  String description;      // Descrição breve do restaurante
+  double stars;            // Avaliação média em estrelas
+  int distance;            // Distância em km
+  List<String> categories; // Lista de categorias associadas
+  List<Dish> dishes;       // Lista de pratos oferecidos por este restaurante
+
+  // Construtor com parâmetros obrigatórios
+  Restaurant({
+    required this.id,
+    required this.imagePath,
+    required this.name,
+    required this.description,
+    required this.stars,
+    required this.distance,
+    required this.categories,
+    required this.dishes,
+  });
+
+  // Serializa os dados para um Map, útil para persistência ou envio
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'imagePath': imagePath,
+      'name': name,
+      'description': description,
+      'stars': stars,
+      'distance': distance,
+      'categories': categories,
+      'dishes': dishes.map((dish) => dish.toMap()).toList(),
+    };
+  }
+
+  // Cria um objeto Restaurant a partir de um Map
+  factory Restaurant.fromMap(Map<String, dynamic> map) {
+    return Restaurant(
+      id: map['id'],
+      imagePath: map['imagePath'],
+      name: map['name'],
+      description: map['description'],
+      stars: map['stars'].toDouble(),
+      distance: map['distance'],
+      categories: List<String>.from(map['categories']),
+      dishes: List<Dish>.from(map['dishes'].map((dish) => Dish.fromMap(dish))),
+    );
+  }
+
+  // Representação textual do restaurante (útil para debug)
+  @override
+  String toString() {
+    return 'Restaurant{id: $id, imagePath: $imagePath, name: $name, description: $description, stars: $stars, distance: $distance, categories: $categories}';
+  }
+}
