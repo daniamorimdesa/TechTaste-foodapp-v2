@@ -311,8 +311,6 @@ Representa um restaurante no aplicativo, com informações visuais, localizaçã
 ### Código comentado
 
 ```dart
-import 'package:myapp/model/dish.dart';
-
 // Classe que representa um restaurante no app
 class Restaurant {
   String id;               // Identificador único do restaurante
