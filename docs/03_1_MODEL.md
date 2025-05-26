@@ -199,4 +199,70 @@ class CreditCard {
       brand.hashCode ^
       isPrimary.hashCode;
 }
+
+```
+---
+## `dish.dart`
+
+### Funcionalidade
+Representa um prato individual disponível no cardápio de um restaurante, com suas informações principais como nome, descrição, preço e imagem.
+
+### Decisão técnica
+- Modelo simples e direto para representar dados de um prato;
+- Inclui métodos `toMap` e `fromMap` para facilitar serialização/desserialização (por exemplo, ao salvar ou carregar de um banco de dados ou API);
+- Sobrescreve `toString` para facilitar o debug e exibição.
+
+### Código comentado
+
+```dart
+// Classe que representa um prato do cardápio de um restaurante
+class Dish {
+  final String id;  // Identificador único do prato (pode ser usado para busca ou comparação)
+  final String name; // Nome do prato 
+  final String description;  // Descrição detalhada do prato 
+  final int price; // Preço do prato
+  final String imagePath;  // Caminho da imagem ilustrativa do prato
+  final String restaurantName;  // Nome do restaurante ao qual o prato pertence
+
+  // Construtor com todos os campos obrigatórios
+  Dish({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.price,
+    required this.imagePath,
+    required this.restaurantName,
+  });
+
+  // Converte o objeto Dish em um mapa (útil para armazenamento em banco de dados, etc.)
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'price': price,
+      'imagePath': imagePath,
+      'restaurantName': restaurantName,
+    };
+  }
+
+  // Cria um objeto Dish a partir de um mapa (útil para leitura de banco de dados ou JSON)
+  factory Dish.fromMap(Map<String, dynamic> map) {
+    return Dish(
+      id: map['id'],
+      name: map['name'],
+      description: map['description'],
+      price: map['price'],
+      imagePath: map['imagePath'],
+      restaurantName: map['restaurantName'],
+    );
+  }
+
+  // Sobrescreve a representação em string do objeto para facilitar o debug e a leitura
+  @override
+  String toString() {
+    return 'Dish{id: $id, name: $name, description: $description, price: $price, imagePath: $imagePath, restaurantName: $restaurantName}';
+  }
+}
+
 ```
