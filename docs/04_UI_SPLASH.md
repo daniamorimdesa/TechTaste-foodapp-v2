@@ -1,23 +1,18 @@
 # Pasta `splash/`
 
-A splash screen é a tela de boas-vindas do aplicativo **TechTaste**, apresentada ao usuário logo após o carregamento inicial. Ela tem como função transmitir os valores da marca, criar um impacto visual inicial positivo e encaminhar o usuário para a tela principal (`HomeScreen`).
+Define a tela inicial do aplicativo, exibindo o logotipo, mensagens de boas-vindas e um botão para navegar para a tela principal (`HomeScreen`).
 
 ---
 
 ## `splash_screen.dart`
 
-Este arquivo define o layout visual da splash screen, composto por:
+### Funcionalidade
+Define a tela inicial do aplicativo, exibindo o logotipo, mensagens de boas-vindas e um botão para navegar para a tela principal.
 
-- **Banner superior** com imagem.
-- **Logo central** do aplicativo.
-- **Frases de impacto** com diferentes estilos.
-- **Botão "Bora!"**, que leva o usuário à tela inicial (`HomeScreen`) ao ser pressionado.
-
-### Navegação
-O botão utiliza `Navigator.pushReplacement` para substituir a splash pela Home, impedindo que o usuário volte para a splash ao pressionar "voltar".
-
-### Estilo
-Cores e tipografias são definidos por constantes em `app_colors.dart` e `app_text_styles.dart`, garantindo consistência visual.
+### Decisões Técnicas
+- Utiliza `Stack` para sobrepor o banner no topo da tela
+- Centraliza o conteúdo principal com `Column` e `Spacer`
+- Implementa navegação para `HomeScreen` ao pressionar o botão
 
 ### Código comentado
 
@@ -93,20 +88,14 @@ class SplashScreen extends StatelessWidget {
 
 ## `splash_screen_button.dart`
 
-Este componente representa o botão customizado utilizado na splash screen:
-- GestureDetector para detectar toques
-- AnimatedContainer para animar a troca de cor ao pressionar
-- Recebe o texto e a ação (onPressed) como parâmetros
+### Funcionalidade
+Componente reutilizável de botão estilizado para a tela de splash, com feedback visual ao ser pressionado.
 
-Esse botão foi separado como componente para **possível reutilização futura** em outras telas com o mesmo estilo.
-
----
-
-## Comportamento esperado
-
-- O botão **muda de cor rapidamente** ao toque, criando uma resposta visual agradável.
-- A navegação para a Home ocorre **sem histórico**, respeitando o fluxo comum de apps com splash screen.
-
+### Decisões Técnicas
+- Utiliza `GestureDetector` para detectar interações do usuário
+- Anima a mudança de cor ao pressionar o botão com `AnimatedContainer`
+- Aplica estilos personalizados definidos em `AppTextStyles` e `AppColors`
+  
 ### Código comentado
 
 ```dart
@@ -159,8 +148,5 @@ class _SplashScreenButtonState extends State<SplashScreenButton> {
 
 Ambos os arquivos utilizam:
 
-- `app_colors.dart` para cores do fundo, botão e textos.
-- `app_text_styles.dart` para estilos tipográficos.
-- `Image.asset()` para imagens locais (`logo.png` e `banner_splash.png`).
-
----
+- `app_colors.dart` para cores do fundo, botão e textos
+- `app_text_styles.dart` para estilos tipográficos
