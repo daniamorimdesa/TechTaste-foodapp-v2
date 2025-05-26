@@ -127,3 +127,76 @@ class Address {
 }
 
 ```
+---
+## `credit_card.dart`
+
+### Funcionalidade
+Representa um cartão de crédito salvo pelo usuário para facilitar o pagamento de pedidos.
+
+### Decisão técnica
+- Modelo com atributos imutáveis (`final`);
+- Inclui método `copyWith` para permitir modificações pontuais;
+- `maskedNumber` retorna a versão mascarada do número do cartão para exibição segura.
+
+### Código comentado
+
+```dart
+// Classe que representa um cartão de crédito armazenado
+class CreditCard {
+  final String cardName;     // Nome impresso no cartão
+  final String last4Digits;  // Últimos 4 dígitos do cartão (ex: "1234")
+  final String expiryDate;   // Data de validade no formato MM/AA
+  final String brand;        // Bandeira do cartão (Visa, Mastercard, etc.)
+  final bool isPrimary;      // Indica se é o cartão principal
+
+  // Construtor com todos os campos obrigatórios, exceto `isPrimary` que é opcional com valor padrão `false`
+  CreditCard({
+    required this.cardName,
+    required this.last4Digits,
+    required this.expiryDate,
+    required this.brand,
+    this.isPrimary = false,
+  });
+
+  // Getter que retorna o número do cartão mascarado, exibindo apenas os últimos 4 dígitos
+  String get maskedNumber => '•••• •••• •••• $last4Digits';
+
+  // Método que retorna uma nova instância de CreditCard com campos modificados opcionalmente
+  CreditCard copyWith({
+    String? cardName,
+    String? last4Digits,
+    String? expiryDate,
+    String? brand,
+    bool? isPrimary,
+  }) {
+    return CreditCard(
+      cardName: cardName ?? this.cardName,
+      last4Digits: last4Digits ?? this.last4Digits,
+      expiryDate: expiryDate ?? this.expiryDate,
+      brand: brand ?? this.brand,
+      isPrimary: isPrimary ?? this.isPrimary,
+    );
+  }
+
+  // Sobrescreve o operador de igualdade para comparação por valor
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CreditCard &&
+          runtimeType == other.runtimeType &&
+          cardName == other.cardName &&
+          last4Digits == other.last4Digits &&
+          expiryDate == other.expiryDate &&
+          brand == other.brand &&
+          isPrimary == other.isPrimary;
+
+  // Gera o hash code baseado nos campos do cartão
+  @override
+  int get hashCode =>
+      cardName.hashCode ^
+      last4Digits.hashCode ^
+      expiryDate.hashCode ^
+      brand.hashCode ^
+      isPrimary.hashCode;
+}
+```
