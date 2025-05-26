@@ -22,14 +22,6 @@ Este arquivo define uma função que retorna uma `AppBar` personalizada com vár
 ### Código comentado
 
 ```dart
-// appbar.dart
-
-import 'package:flutter/material.dart'; 
-import 'package:myapp/ui/_core/providers/bag_provider.dart';
-import 'package:myapp/ui/checkout/checkout_screen.dart';
-import 'package:provider/provider.dart';
-import 'package:badges/badges.dart' as badges;
-
 // Retorna uma AppBar customizada com título, botão de voltar e ícone da sacola
 AppBar getAppBar({
   required BuildContext context,
