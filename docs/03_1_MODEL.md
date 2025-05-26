@@ -266,3 +266,33 @@ class Dish {
 }
 
 ```
+---
+## `payment.dart`
+
+### Funcionalidade
+Define os métodos de pagamento disponíveis e encapsula informações específicas para pagamentos em dinheiro (como o valor para troco).
+
+### Decisão técnica
+- Uso de `enum` para garantir tipagem forte e evitar erros com strings ao definir o tipo de pagamento;
+- Classe `CashPaymentInfo` permite adicionar dados opcionais relacionados ao pagamento em dinheiro (ex: valor para troco);
+- Arquitetura extensível: novas formas de pagamento podem ser adicionadas facilmente.
+
+### Código comentado
+
+```dart
+// Enumeração que define os tipos de métodos de pagamento disponíveis no app
+enum PaymentMethodType {
+  card, // Cartão de crédito
+  pix,  // Pagamento via Pix
+  cash, // Dinheiro
+}
+
+// Classe que representa informações adicionais para pagamento em dinheiro
+class CashPaymentInfo {
+  final double? changeFor; // Valor em dinheiro que o cliente usará para pagar e o troco calculado para tal
+
+  // Construtor com valor opcional. Se não informado, assume que não há necessidade de troco.
+  CashPaymentInfo({this.changeFor});
+}
+
+```
