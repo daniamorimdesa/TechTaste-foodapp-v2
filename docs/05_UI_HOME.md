@@ -4,7 +4,7 @@ Define as telas principais de navegação e descoberta do aplicativo, como a tel
 
 | Home Screen | Search Results Screen | 
 |--------------|---------------------|
-| ![Splash](assets/screenshots/home_screen.png) | ![Home](assets/screenshots/search_results_screen.png)
+| ![Home](assets/screenshots/home_screen.png) | ![Search results](assets/screenshots/search_results_screen.png)
 
 ---
 
