@@ -3,8 +3,8 @@
 Define as telas principais de navegação e descoberta do aplicativo, como a tela inicial (`HomeScreen`) com categorias e promoções, e a tela de resultados de busca (`SearchResultsScreen`) que exibe restaurantes filtrados a partir de uma palavra-chave.
 
 | Home Screen | Search Results Screen | 
-|--------------|---------------------|
-| ![Home](assets/screenshots/home_screen.png) | ![Search results](assets/screenshots/search_results_screen.png)
+|-------------|------------------------|
+| ![Home](../assets/screenshots/home_screen.png) | ![Search results](../assets/screenshots/search_results_screen.png) |
 
 ---
 
