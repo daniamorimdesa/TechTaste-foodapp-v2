@@ -94,12 +94,36 @@ class RestaurantScreen extends StatelessWidget {
 ## `see_more_button.dart`
 
 ### Funcionalidade
+O `SeeMoreButton` é um botão reutilizável exibido ao final da tela de um restaurante, permitindo ao usuário navegar para a tela com todos os pratos (`AllDishesScreen`) daquele restaurante.
 
+### Decisão técnica
+Optou-se por usar um `TextButton` estilizado com as cores do tema do app, aproveitando o `WidgetStateProperty.resolveWith` para alterar a cor do texto quando o botão está pressionado. Isso garante feedback visual sem a complexidade de criar um botão personalizado.
 
-### Decisões Técnicas
-
-- 
 
 ### Código comentado
 
 ```dart
+// Botão de "ver mais" da tela de Restaurante
+class SeeMoreButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const SeeMoreButton({super.key, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: onPressed, // Ação executada ao clicar no botão
+      style: ButtonStyle(
+        // Define a cor do texto com base no estado do botão
+        foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+          if (states.contains(WidgetState.pressed)) {
+            return AppColors.pressedColor; // Cor ao pressionar
+          }
+          return AppColors.buttonsColor; // Cor normal
+        }),
+      ),
+      child: const Text("Ver mais"), // Texto exibido no botão
+    );
+  }
+}
+
