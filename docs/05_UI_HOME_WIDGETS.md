@@ -178,6 +178,7 @@ class RestaurantWidget extends StatelessWidget {
 ```
 ---
 ## `search_bar_widget.dart`
+ ![search_bar](../assets/screenshots/search_bar_screenshot.JPG)
 
 ### Funcionalidade
 
@@ -294,6 +295,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
 ```
 ---
 ## `home_drawer.dart`
+ ![home_drawer](../assets/screenshots/home_drawer_screenshot.JPG)
 
 ### Funcionalidade
 O widget `HomeDrawer` é o menu lateral da aplicação, permitindo navegação para duas seções principais:
@@ -395,6 +397,7 @@ class HomeDrawer extends StatelessWidget {
 ```
 ---
 ## `home_drawer_button.dart`
+ ![home_drawer_button](../assets/screenshots/home_drawer_button_design.JPG)
 
 ### Funcionalidade
 O `HomeDrawerButton` é um botão reutilizável e customizado para uso no `Drawer` da tela inicial. Ele altera seu visual dinamicamente conforme o estado (pressionado ou não), oferecendo feedback visual ao toque.
