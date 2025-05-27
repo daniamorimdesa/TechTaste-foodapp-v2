@@ -9,7 +9,7 @@ Define a tela inicial do aplicativo, exibindo o logotipo, mensagens de boas-vind
 ### Funcionalidade
 Define a tela inicial do aplicativo, exibindo o logotipo, mensagens de boas-vindas e um botão para navegar para a tela principal.
 
-### Decisões Técnicas
+### Decisão Técnica
 - Utiliza `Stack` para sobrepor o banner no topo da tela
 - Centraliza o conteúdo principal com `Column` e `Spacer`
 - Implementa navegação para `HomeScreen` ao pressionar o botão
@@ -91,7 +91,7 @@ class SplashScreen extends StatelessWidget {
 ### Funcionalidade
 Componente reutilizável de botão estilizado para a tela de splash, com feedback visual ao ser pressionado.
 
-### Decisões Técnicas
+### Decisão Técnica
 - Utiliza `GestureDetector` para detectar interações do usuário
 - Anima a mudança de cor ao pressionar o botão com `AnimatedContainer`
 - Aplica estilos personalizados definidos em `AppTextStyles` e `AppColors`
