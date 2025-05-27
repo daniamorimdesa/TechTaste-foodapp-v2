@@ -6,6 +6,7 @@ Esta pasta contém widgets reutilizáveis que compõem visualmente a tela inicia
 ---
 
 ## `category_widget.dart`
+ ![categories](../assets/screenshots/categories_screenshot.JPG)
 
 ### Funcionalidade
 
@@ -99,6 +100,7 @@ class CategoryWidget extends StatelessWidget {
 
 ---
 ## `restaurant_widget.dart`
+ ![restaurant_widget](../assets/screenshots/restaurant_widget_screenshot.JPG)
 
 ### Funcionalidade
 
