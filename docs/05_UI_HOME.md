@@ -172,3 +172,123 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+```
+---
+## `search_results_screen.dart`
+
+### Funcionalidade
+
+Exibe os resultados da busca realizados na `SearchBarWidget` da `HomeScreen`, filtrando tanto os nomes dos restaurantes quanto os nomes e descrições dos pratos. A tela organiza os resultados em duas seções distintas: restaurantes encontrados e pratos encontrados.
+
+### Decisões Técnicas
+
+- Utiliza `StatelessWidget`, pois o conteúdo depende apenas da entrada `query` e dos dados do `Provider`.
+- Filtra os restaurantes cujo nome contenha o termo buscado (`query`), desconsiderando maiúsculas e minúsculas.
+- Filtra os pratos com base no nome ou na descrição, preservando a associação com seu respectivo restaurante para exibição via `DishCard`.
+- Mostra mensagens de feedback ao usuário caso não haja resultados.
+- Organiza visualmente os resultados em seções separadas com espaçamentos e divisores.
+
+### Código comentado
+
+```dart
+class SearchResultsScreen extends StatelessWidget {
+  final String query;
+
+  const SearchResultsScreen({super.key, required this.query});
+
+  @override
+  Widget build(BuildContext context) {
+    // Acesso ao provedor de dados
+    final restaurantData = Provider.of<RestaurantData>(context);
+
+    // Filtra restaurantes cujo nome corresponde à busca
+    final filteredRestaurants =
+        restaurantData.listRestaurant.where((restaurant) {
+          return restaurant.name.toLowerCase().contains(query.toLowerCase());
+        }).toList();
+
+    // Filtra pratos por nome ou descrição, mantendo o vínculo com o restaurante
+    final filteredDishCards =
+        restaurantData.listRestaurant.expand((restaurant) {
+          return restaurant.dishes
+              .where(
+                (dish) =>
+                    dish.name.toLowerCase().contains(query.toLowerCase()) ||
+                    dish.description.toLowerCase().contains(query.toLowerCase()),
+              )
+              .map((dish) => DishCard(dish: dish, restaurant: restaurant));
+        }).toList();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Resultados para "$query"',
+          style: TextStyle(
+            color: AppColors.mainColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Se houver restaurantes correspondentes
+          if (filteredRestaurants.isNotEmpty) ...[
+            const Text(
+              "Restaurantes encontrados",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+                color: AppColors.highlightTextColor,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Lista dos restaurantes filtrados
+            ...filteredRestaurants.map(
+              (restaurant) => Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: RestaurantWidget(restaurant: restaurant),
+              ),
+            ),
+
+            Divider(color: AppColors.highlightTextColor),
+            const SizedBox(height: 12),
+          ],
+
+          // Se houver pratos correspondentes
+          if (filteredDishCards.isNotEmpty) ...[
+            const Text(
+              "Pratos encontrados",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+                color: AppColors.highlightTextColor,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Lista de DishCards com referência ao restaurante
+            ...filteredDishCards,
+          ],
+
+          // Caso nenhum resultado seja encontrado
+          if (filteredRestaurants.isEmpty && filteredDishCards.isEmpty)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: 32),
+                child: Text(
+                  "Nenhum resultado encontrado.",
+                  style: TextStyle(
+                    color: AppColors.highlightTextColor,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
