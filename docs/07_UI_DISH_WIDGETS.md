@@ -1,196 +1,209 @@
 # Pasta `dish/widgets/`
 
-Contém os widgets de pratos mais pedidos e o DishCard de um prato (utilizado em algumas telas do app como a tela de Restaurante e nos resultados de busca).
+Contém os widgets de "pratos mais pedidos" e o `DishCard` de um prato (utilizado em algumas telas do app como a tela de Restaurante e nos resultados de busca).
+
+| MostOrderedDishes na Restaurant Screen | DishCard | 
+|-------------|-------------|
+| ![most ordered dishes example](https://github.com/daniamorimdesa/TechTaste-foodapp-v2/blob/main/assets/screenshots/restaurant_screen.png) | ![dish card example](https://github.com/daniamorimdesa/TechTaste-foodapp-v2/blob/main/assets/screenshots/dish_card_screenshot.PNG)|
 
 ---
 ## `most_ordered_dishes.dart`
-Este widget define o componente MostOrderedDishes, responsável por exibir uma lista dos pratos mais pedidos de um restaurante. Como esse é um comportamendo mockado no app,  ele recebe uma lista completa de Dish e um Restaurant, e exibe no máximo os três primeiros pratos, utilizando o widget DishCard para a renderização visual.
+Este widget define o componente `MostOrderedDishes`, responsável por exibir uma lista dos pratos mais pedidos de um restaurante. Como esse é um comportamendo mockado no app,  ele recebe uma lista completa de `Dish` e um `Restaurant`, e exibe no máximo os três primeiros pratos, utilizando o widget DishCard para a renderização visual.
 
 ### Funcionalidade
-
+- Recebe todos os pratos disponíveis (`allDishes`) e um restaurante associado.
+- Exibe, no máximo, três pratos — representando os “mais pedidos”.
+- Utiliza o componente `DishCard` para apresentar cada prato.
+- Adiciona um título "Mais pedidos" estilizado acima da lista.
+  
 ### Decisão Técnica
-A tela recebe a lista de pratos (`dishes`) e o restaurante correspondente como parâmetros, garantindo que o contexto da navegação seja mantido. Cada prato é renderizado com o widget `DishCard`, que encapsula a visualização de informações individuais de cada prato.
+- A lógica de mock para os "mais pedidos" foi implementada com um simples `sublist`, o que permite fácil substituição futura por uma lógica real baseada em dados de pedidos.
+- A escolha de um `Column` para exibição vertical dos `DishCard` segue o padrão visual do app, além de permitir expansão automática com o conteúdo.
 
 ### Código comentado
 
 ```dart
-// Tela com todos os pratos do restaurante
-class AllDishesScreen extends StatelessWidget {
-  final List<Dish> dishes;        // Lista de pratos a serem exibidos
-  final Restaurant restaurant;    // Restaurante de origem dos pratos
+// Componente que simula pratos mais pedidos
+class MostOrderedDishes extends StatelessWidget {
+  final List<Dish> allDishes;  // Lista completa de pratos disponíveis
+  final Restaurant restaurant; // Restaurante ao qual os pratos pertencem
 
-  const AllDishesScreen({
-    required this.dishes,
+  const MostOrderedDishes({
+    required this.allDishes,
     required this.restaurant,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Todos os pratos")),  // AppBar com título fixo
-      body: ListView(
-        children: dishes
-            .map((dish) => DishCard(                          // Para cada prato, renderiza um DishCard
-              dish: dish,
-              restaurant: restaurant,
-            ))
-            .toList(),
-      ),
+    // Seleciona os 3 primeiros pratos, se houver pelo menos 3
+    final List<Dish> mostOrdered =
+        allDishes.length >= 3 ? allDishes.sublist(0, 3) : allDishes;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Título da seção
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 22),
+          child: Text('Mais pedidos', style: AppTextStyles.dishTitle),
+        ),
+        const SizedBox(height: 8),
+        
+        // Lista dos pratos mais pedidos usando o DishCard
+        Column(
+          children: mostOrdered
+              .map((dish) => DishCard(dish: dish, restaurant: restaurant))
+              .toList(),
+        ),
+      ],
     );
   }
 }
+
 ```
 ---
-## `dish_details_screen.dart`
+## `dish_card.dart`
+Este widget define o componente `DishCard`, responsável por exibir um prato em forma de card interativo. Ele é usado em diversas telas do app, como a tela de restaurante e resultados de busca, e permite ao usuário visualizar detalhes do prato, bem como adicioná-lo ou removê-lo do carrinho.
+
+![dish card example](https://github.com/daniamorimdesa/TechTaste-foodapp-v2/blob/main/assets/screenshots/dish_card_screenshot.PNG)
 
 ### Funcionalidade
-Exibe os detalhes completos de um prato selecionado, permitindo ao usuário ajustar a quantidade e adicioná-lo à sacola. Também reflete a quantidade previamente escolhida caso o usuário retorne de outra tela, como a sacola.
+- Exibe informações completas de um prato (`Dish`): imagem, nome, preço e descrição
+- Permite que o usuário adicione ou remova o prato diretamente do card, integrando-se com o `BagProvider`
+- Se clicado, abre a tela de detalhes (`DishDetailsScreen`) para mais informações do prato
+- Exibe a quantidade atual do prato no carrinho, com ícones para incrementar ou decrementar
 
 ### Decisão Técnica
--  A tela é um `StatefulWidget` para manter e atualizar a quantidade escolhida dinamicamente
--  O estado escuta o `RouteObserver` para detectar quando o usuário retorna de uma rota sobreposta e atualizar a quantidade com base na sacola atual
--  A integração com o `BagProvider` (via Provider) permite gerenciar e sincronizar os dados da sacola
--  Uso de `RouteAware` para atualizar o estado quando o usuário retorna à tela
--  Uso de `MediaQuery` para ajustar dinamicamente o tamanho da imagem com base na altura da tela
+- Foi usado `InkWell` para tornar o card clicável e responsivo
+- A imagem do prato é carregada localmente de `assets/`, com `BoxFit.cover` para preencher a largura do card
+- A renderização condicional (`quantity == 0 ? ... : ...`) permite alternar entre o botão de "adicionar" e o controle de quantidade no carrinho
+- O uso de `context.watch<BagProvider>()` garante que as mudanças no estado da sacola reflitam automaticamente no card
 
 ### Código comentado
 
 ```dart
-// Tela de detalhes de um prato
-class DishDetailsScreen extends StatefulWidget {
-  final Dish dish;              // Prato selecionado
-  final Restaurant restaurant;  // Restaurante ao qual pertence
+// Card de um prato
+class DishCard extends StatelessWidget {
+  final Dish dish;             // O prato a ser exibido
+  final Restaurant restaurant; // Restaurante ao qual o prato pertence
 
-  const DishDetailsScreen({
-    super.key,
-    required this.dish,
-    required this.restaurant,
-  });
-
-  @override
-  State<DishDetailsScreen> createState() => _DishDetailsScreenState();
-}
-
-class _DishDetailsScreenState extends State<DishDetailsScreen> with RouteAware {
-  int quantity = 1;            // Quantidade selecionada do prato
-  bool hasInitialized = false; // Evita chamadas múltiplas no didChangeDependencies
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!hasInitialized) {
-      _updateQuantityFromBag(); // Inicializa com a quantidade já adicionada na sacola (se houver)
-      hasInitialized = true;
-    }
-
-    // Inscreve-se no observer de rotas
-    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute); // Escuta mudanças de rota
-  }
-
-  void _updateQuantityFromBag() {
-    final bagProvider = Provider.of<BagProvider>(context, listen: false);
-    final currentQty = bagProvider.getDishQuantity(widget.dish);
-    if (currentQty > 0) {
-      setState(() {
-        quantity = currentQty;
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    routeObserver.unsubscribe(this); // Evita vazamento de memória
-    super.dispose();
-  }
-
-  @override
-  void didPopNext() {
-    _updateQuantityFromBag(); // Atualiza ao retornar de uma rota superior (como a sacola)
-  }
-
-  void increaseQuantity() {
-    setState(() {
-      quantity++;
-    });
-  }
-
-  void decreaseQuantity() {
-    if (quantity > 1) {
-      setState(() {
-        quantity--;
-      });
-    }
-  }
+  const DishCard({super.key, required this.dish, required this.restaurant});
 
   @override
   Widget build(BuildContext context) {
-    final bagProvider = Provider.of<BagProvider>(context);
+    final bagProvider = context.watch<BagProvider>();   // Estado da sacola
+    final quantity = bagProvider.getDishQuantity(dish); // Quantidade no carrinho
 
-    return Scaffold(
-      appBar: getAppBar(context: context, title: widget.restaurant.name), // AppBar personalizada
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
+    return InkWell(
+      onTap: () {
+        // Abre a tela de detalhes do prato
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DishDetailsScreen(
+              dish: dish,
+              restaurant: restaurant,
+            ),
+          ),
+        );
+      },
+      child: Card(
+        color: AppColors.backgroundCardTextColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Imagem
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                'assets/${widget.dish.imagePath}',
-                height: MediaQuery.of(context).size.height * 0.35,
-                width: double.infinity,
-                fit: BoxFit.contain,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Nome e preço
-            Text(widget.dish.name, style: AppTextStyles.dishTitleBigger),
-            const SizedBox(height: 2),
-            Text(
-              'R\$ ${widget.dish.price.toStringAsFixed(2)}',
-              style: AppTextStyles.dishPriceBigger,
-            ),
-            const SizedBox(height: 2),
-            Text(widget.dish.description, style: AppTextStyles.sectionTitle),
-            const SizedBox(height: 10),
-
-            // Seletor de quantidade
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.remove, color: AppColors.mainColor),
-                  onPressed: decreaseQuantity,
-                ),
-                Text(quantity.toString(), style: AppTextStyles.body),
-                IconButton(
-                  icon: const Icon(Icons.add, color: AppColors.mainColor),
-                  onPressed: increaseQuantity,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Botão Adicionar à sacola
-            SizedBox(
+            // Imagem do prato
+            Image.asset(
+              'assets/${dish.imagePath}',
+              height: 160,
               width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.mainColor,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(32),
+              fit: BoxFit.cover,
+            ),
+            // Conteúdo textual e botões
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Linha superior: nome do prato e controle de quantidade
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          dish.name,
+                          style: AppTextStyles.dishTitle,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      quantity == 0
+                          ? IconButton(
+                              icon: const Icon(Icons.add_circle_outline),
+                              onPressed: () {
+                                // Adiciona o prato ao carrinho
+                                bagProvider.addDish(
+                                  dish,
+                                  quantity + 1,
+                                  restaurant,
+                                );
+                              },
+                            )
+                          : Row(
+                              children: [
+                                // Botão para remover uma unidade
+                                IconButton(
+                                  icon:
+                                      const Icon(Icons.remove_circle_outline),
+                                  onPressed: () {
+                                    if (quantity > 1) {
+                                      bagProvider.updateDishQuantity(
+                                        dish,
+                                        quantity - 1,
+                                      );
+                                    } else {
+                                      bagProvider.removeDish(dish);
+                                    }
+                                  },
+                                ),
+                                // Quantidade atual no carrinho
+                                Text(
+                                  '$quantity',
+                                  style: AppTextStyles.dishPrice.copyWith(
+                                    color: AppColors.mainColor,
+                                  ),
+                                ),
+                                // Botão para adicionar mais uma unidade
+                                IconButton(
+                                  icon: const Icon(Icons.add_circle_outline),
+                                  onPressed: () {
+                                    bagProvider.addDish(
+                                      dish,
+                                      quantity + 1,
+                                      restaurant,
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                    ],
                   ),
-                ),
-                onPressed: () {
-                  bagProvider.updateDishQuantity(widget.dish, quantity);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Atualizado na sacola')),
-                  );
-                },
-                child: Text('Adicionar', style: AppTextStyles.button),
+                  const SizedBox(height: 6),
+                  // Preço do prato
+                  Text(
+                    "R\$ ${dish.price.toStringAsFixed(2)}",
+                    style: AppTextStyles.dishPrice,
+                  ),
+                  const SizedBox(height: 6),
+                  // Descrição do prato
+                  Text(dish.description, style: AppTextStyles.body),
+                  const SizedBox(height: 6),
+                ],
               ),
             ),
           ],
