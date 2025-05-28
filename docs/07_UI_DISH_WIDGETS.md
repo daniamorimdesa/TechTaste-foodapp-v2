@@ -66,8 +66,6 @@ class MostOrderedDishes extends StatelessWidget {
 ## `dish_card.dart`
 Este widget define o componente `DishCard`, responsável por exibir um prato em forma de card interativo. Ele é usado em diversas telas do app, como a tela de restaurante e resultados de busca, e permite ao usuário visualizar detalhes do prato, bem como adicioná-lo ou removê-lo do carrinho.
 
-![dish card example](https://github.com/daniamorimdesa/TechTaste-foodapp-v2/blob/main/assets/screenshots/dish_card_screenshot.PNG)
-
 ### Funcionalidade
 - Exibe informações completas de um prato (`Dish`): imagem, nome, preço e descrição
 - Permite que o usuário adicione ou remova o prato diretamente do card, integrando-se com o `BagProvider`
