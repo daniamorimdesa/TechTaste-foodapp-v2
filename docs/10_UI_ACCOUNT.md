@@ -1,8 +1,14 @@
 # Pasta `account/`
 
 | Account Screen | Account Screen Mockup | 
-|-------------|------------------------|
+|----------------|------------------------|
 | ![account screen](../assets/screenshots/account_screen.png) | ![account screen mockup](../assets/screenshots/account_screen_mock.png) |
+
+> ⚠️ **Observação**:  
+> Os dados exibidos nas capturas de tela foram gerados automaticamente para fins de simulação, utilizando a ferramenta gratuita [4Devs - Gerador de Pessoas](https://www.4devs.com.br/computacao).  
+> Nenhuma informação real de usuário foi utilizada.
+
+---
 
 ## Funcionalidade
 
