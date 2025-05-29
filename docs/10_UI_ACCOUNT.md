@@ -188,3 +188,228 @@ class AccountScreen extends StatelessWidget {
     );
   }
 }
+```
+---
+## `edit_user_data_screen.dart`
+
+### Funcionalidade
+
+Permite que o usuário visualize e edite seus dados cadastrais, incluindo nome completo, CPF e número de telefone.  
+É acessada a partir da tela "Minha conta" (`AccountScreen`) ao clicar no botão "Editar".
+
+Após a validação dos dados, as informações são atualizadas no `UserDataProvider` e o usuário é redirecionado automaticamente à tela anterior.
+
+---
+
+### Decisão Técnica
+- **Gerenciamento de estado com `Provider`:** Utiliza o `UserDataProvider` para acessar e atualizar os dados do usuário globalmente
+- **Validação de formulário com `GlobalKey<FormState>`:** Garante que os dados inseridos estejam corretos antes de salvar.
+- **Máscaras para campos de entrada:** `mask_text_input_formatter` é usada para formatar automaticamente o CPF e o telefone durante a digitação
+- **Validação completa de CPF:** Implementada uma função personalizada `_isValidCPF` que checa se o número digitado é válido de acordo com as regras do CPF brasileiro
+- **Estilo unificado com `AppColors` e `AppTextStyles`:** A tela segue o padrão visual do app, com campos dentro de `Card` estilizados
+- **Feedback visual:** Ao salvar os dados com sucesso, uma mensagem de confirmação é exibida com `SnackBar`
+
+---
+
+### Código comentado
+
+```dart
+// Tela de Edição dos Dados do Usuário
+class EditUserDataScreen extends StatefulWidget {
+  const EditUserDataScreen({super.key});
+
+  @override
+  State<EditUserDataScreen> createState() => _EditUserDataScreenState();
+}
+
+class _EditUserDataScreenState extends State<EditUserDataScreen> {
+  final _formKey = GlobalKey<FormState>(); // Chave para validar o formulário
+
+  // Controladores de texto dos campos
+  final _nameController = TextEditingController(text: '');
+  final _cpfController = TextEditingController(text: '000.000.000-00');
+  final _phoneController = TextEditingController(text: '(XX) 9XXXX-XXXX');
+
+  // Máscaras para CPF e telefone
+  final _cpfFormatter = MaskTextInputFormatter(mask: '###.###.###-##');
+  final _phoneFormatter = MaskTextInputFormatter(mask: '(##) #####-####');
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Carrega os dados salvos do usuário ao iniciar a tela
+    final userData = Provider.of<UserDataProvider>(context, listen: false);
+    _nameController.text = userData.fullName;
+    _cpfController.text =
+        userData.cpf.isNotEmpty ? userData.cpf : '000.000.000-00';
+    _phoneController.text =
+        userData.phone.isNotEmpty ? userData.phone : '(XX) 9XXXX-XXXX';
+  }
+
+  @override
+  void dispose() {
+    // Libera recursos ao destruir a tela
+    _nameController.dispose();
+    _cpfController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  // Validação completa de CPF com algoritmo de verificação
+  bool _isValidCPF(String cpf) {
+    cpf = cpf.replaceAll(RegExp(r'[^0-9]'), '');
+    if (cpf.length != 11 || RegExp(r'^(\d)\1{10}$').hasMatch(cpf)) return false;
+
+    int calcDigit(List<int> digits, int factor) {
+      int sum = 0;
+      for (var d in digits) {
+        sum += d * factor--;
+      }
+      int mod = (sum * 10) % 11;
+      return mod == 10 ? 0 : mod;
+    }
+
+    final digits = cpf.split('').map(int.parse).toList();
+    final d1 = calcDigit(digits.sublist(0, 9), 10);
+    final d2 = calcDigit(digits.sublist(0, 10), 11);
+
+    return d1 == digits[9] && d2 == digits[10];
+  }
+
+  // Salva os dados no provider e retorna para a tela anterior
+  void _saveForm() {
+    if (_formKey.currentState!.validate()) {
+      final userProvider = Provider.of<UserDataProvider>(
+        context,
+        listen: false,
+      );
+
+      userProvider.updateFullName(_nameController.text.trim());
+      userProvider.updateCPF(_cpfController.text.trim());
+      userProvider.updatePhone(_phoneController.text.trim());
+
+      // Feedback visual
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Dados atualizados com sucesso!')),
+      );
+
+      Navigator.of(context).pop(); // Volta para a tela anterior
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: AppColors.backgroundColor,
+      appBar: AppBar(
+        backgroundColor: AppColors.backgroundCardTextColor,
+        iconTheme: const IconThemeData(color: AppColors.mainColor),
+        title: const Text('Editar dados', style: AppTextStyles.titleLargeWhite),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                // Campo Nome
+                _buildStylizedField(
+                  label: 'Nome:',
+                  hint: 'Ex: Ana Souza',
+                  controller: _nameController,
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Informe seu nome' : null,
+                ),
+                // Campo CPF
+                _buildStylizedField(
+                  label: 'CPF:',
+                  hint: '000.000.000-00',
+                  controller: _cpfController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [_cpfFormatter],
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return 'Informe o CPF';
+                    if (!_isValidCPF(value)) {
+                      return 'CPF inválido! Digite novamente:';
+                    }
+                    return null;
+                  },
+                ),
+                // Campo Telefone
+                _buildStylizedField(
+                  label: 'Telefone:',
+                  hint: '(XX) XXXX-XXX',
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [_phoneFormatter],
+                  validator: (value) {
+                    final cleaned = value?.replaceAll(RegExp(r'\D'), '');
+                    if (cleaned == null || cleaned.length != 11) {
+                      return 'Número de telefone inválido. Digite novamente.';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                // Botão Salvar
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _saveForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.mainColor,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Salvar',
+                      style: AppTextStyles.titleButtonSplash,
+                      semanticsLabel: 'Salvar dados do usuário',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Método reutilizável para criar os campos estilizados
+  Widget _buildStylizedField({
+    required String label,
+    required String hint,
+    required TextEditingController controller,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+    String? Function(String?)? validator,
+  }) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 1,
+      color: AppColors.lightBackgroundColor,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
+          style: AppTextStyles.body,
+          decoration: InputDecoration(
+            labelText: label,
+            hintText: hint,
+            border: InputBorder.none,
+          ),
+          validator: validator,
+        ),
+      ),
+    );
+  }
+}
