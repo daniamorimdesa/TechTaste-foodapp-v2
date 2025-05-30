@@ -5,9 +5,9 @@ A lógica de gerenciamento de cartões está centralizada em dois pontos princip
 - `AddCreditCardScreen` – tela de formulário para cadastro de um cartão
 - `CreditCardListScreen` – exibe os cartões salvos com opção de adição/exclusão
 
-| Credit Card List | Add Credit Card |
-|----------------|------------------------|
-| ![credit card list](../assets/screenshots/address_list_screenshot.png) | ![credit card form](../assets/screenshots/edit_address_top.png) |
+| Empty Credit Card List | Add Credit Card | Credit Card List Mockup |
+|----------------|------------------------|------------------------|
+| ![empty credit card list](../assets/screenshots/empty_credit_card_list.png) | ![credit card form](../assets/screenshots/add_credit_card_form.png) |![credit card list mockup](../assets/screenshots/credit_card_list_mockup.png) |
 
 
 > ⚠️ **Observação**:  
@@ -231,180 +231,243 @@ class _AddCreditCardScreenState extends State<AddCreditCardScreen> {
 
 ```
 ---
-## `address_list_screen.dart`
+## `credit_card_list_screen.dart`
 
 ### Funcionalidade
-Essa tela exibe todos os endereços cadastrados pelo usuário e permite:
-- Visualizar os detalhes dos endereços em forma de cartões;
-- Adicionar novos endereços;
-- Editar endereços existentes;
-- Remover endereços;
-- Definir um endereço como principal (marcado com estrela ⭐).
-
-Utiliza o `UserDataProvider` para gerenciar o estado dos endereços e garantir que a lista esteja sempre atualizada com as ações do usuário.
+A `CreditCardListScreen` é responsável por exibir a lista de cartões de crédito cadastrados pelo usuário. Nela, o usuário pode:
+- Ver seus cartões com marca e dados parciais (últimos 4 dígitos, validade);
+- Definir um cartão como principal;
+- Excluir um cartão salvo;
+- Navegar para a tela de cadastro de um novo cartão (`AddCreditCardScreen`).
 
 ---
 ### Decisão Técnica
-- **Gerenciamento de estado com Provider**: Usa o `Consumer<UserDataProvider>` para reconstruir a tela sempre que houver mudança na lista de endereços
-- **Componentização leve**: Utiliza métodos auxiliares privados (`_addOrEditAddress`, `_removeAddress`, `_buildAddressCard`) para manter o build mais limpo e legível
-- **Estética e UX**: Segue o padrão de cores definidos em `AppColors`, utilizando Cards com bordas arredondadas e botões com ícones para facilitar a interação do usuário
-- **Reaproveitamento de tela**: Usa a tela `EditAddressScreen` tanto para adicionar quanto para editar um endereço, aproveitando a lógica de verificação do parâmetro opcional `existingAddress`
+- **Gerenciamento de estado**: Utiliza `Provider` (`UserDataProvider`) para acessar e modificar a lista de cartões salvos
+- **Reatividade**: A interface se atualiza automaticamente ao adicionar/remover cartões ou alterar o principal
+- **Navegação**: O botão `+` no `AppBar` e no corpo vazio usam Navigator.push para abrir a tela de cadastro de cartão
+- **Acessibilidade Visual**:Cartões marcados como principal recebem destaque visual (borda colorida e etiqueta “Principal”)
+- **UX Melhorada**:Mensagem amigável e botão de ação são exibidos quando não há cartões cadastrados
 
 ---
 ## Código comentado
 ```dart
-// Lista os endereços cadastrados com opção de editar e adicionar 
-class AddressListScreen extends StatelessWidget {
-  const AddressListScreen({super.key});
-
-  // Abre a tela de edição ou adição de endereço
-  void _addOrEditAddress(BuildContext context, [Address? existingAddress]) {
-    final userProvider = Provider.of<UserDataProvider>(context, listen: false);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => EditAddressScreen(
-          address: existingAddress, // se for nulo, é um novo endereço
-          onSave: (newAddress) {
-            if (existingAddress != null) {
-              userProvider.updateAddress(existingAddress, newAddress);
-            } else {
-              userProvider.addAddress(newAddress);
-            }
-            // Se o novo endereço for marcado como principal
-            if (newAddress.isPrimary) {
-              userProvider.setPrimaryAddress(newAddress);
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  // Exibe diálogo de confirmação para remover um endereço
-  void _removeAddress(BuildContext context, Address address) {
-    final userProvider = Provider.of<UserDataProvider>(context, listen: false);
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.backgroundColor,
-        title: const Text(
-          'Remover endereço',
-          style: TextStyle(color: AppColors.highlightTextColor),
-        ),
-        content: const Text(
-          'Tem certeza que deseja remover este endereço?',
-          style: TextStyle(color: AppColors.cardTextColor),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar', style: TextStyle(color: AppColors.buttonsColor)),
-          ),
-          TextButton(
-            onPressed: () {
-              userProvider.removeAddress(address);
-              Navigator.pop(context);
-            },
-            child: const Text('Remover', style: TextStyle(color: AppColors.highlightTextColor)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Constrói o card de cada endereço
-  Widget _buildAddressCard(BuildContext context, Address address, int index) {
-    return Card(
-      color: AppColors.backgroundCardTextColor,
-      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        title: Text(
-          '${address.label} - ${address.street}, ${address.number}',
-          style: const TextStyle(color: AppColors.highlightTextColor, fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          '${address.neighborhood}, ${address.city} - ${address.state}\nCEP: ${address.cep}',
-          style: const TextStyle(color: AppColors.cardTextColor, fontSize: 16, fontWeight: FontWeight.w400),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (address.isPrimary)
-              const Icon(Icons.star, color: AppColors.highlightTextColor), // ícone de endereço principal
-            IconButton(
-              icon: const Icon(Icons.edit, color: AppColors.buttonsColor),
-              onPressed: () => _addOrEditAddress(context, address),
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete, color: AppColors.cardTextColor),
-              onPressed: () => _removeAddress(context, address),
-            ),
-          ],
-        ),
-        onTap: () => _addOrEditAddress(context, address), // edição rápida ao tocar no card
-      ),
-    );
-  }
+// Tela para cadastrar/listar os cartões de crédito 
+class CreditCardListScreen extends StatelessWidget {
+  const CreditCardListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserDataProvider>(
-      builder: (context, userProvider, child) {
-        final addresses = userProvider.addresses;
+    // Obtém a instância do provider com os dados do usuário
+    final userDataProvider = Provider.of<UserDataProvider>(context);
+    final cards = userDataProvider.creditCards;
 
-        return Scaffold(
-          backgroundColor: AppColors.backgroundColor,
-          appBar: AppBar(
-            title: const Text('Meus Endereços'),
-            backgroundColor: AppColors.lightBackgroundColor,
-            foregroundColor: AppColors.cardTextColor,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.lightBackgroundColor,
+        iconTheme: const IconThemeData(
+          color: AppColors.highlightTextColor,
+          size: 30,
+        ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Meus Cartões', style: AppTextStyles.titleLargeWhite),
+            IconButton(
+              icon: const Icon(Icons.add, size: 36, color: AppColors.buttonsColor),
+              onPressed: () {
+                // Navega para a tela de cadastro de cartão
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => AddCreditCardScreen()),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+
+      backgroundColor: AppColors.backgroundColor,
+
+      body: cards.isEmpty
+        ? _buildEmptyState(context)
+        : _buildCardList(cards, context, userDataProvider),
+    );
+  }
+
+  // Widget para estado vazio (sem cartões cadastrados)
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.credit_card_off, size: 64, color: AppColors.buttonsColor),
+            const SizedBox(height: 16),
+            Text('Você ainda não cadastrou nenhum cartão.',
+                style: AppTextStyles.body, textAlign: TextAlign.center),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.buttonsColor,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+              onPressed: () {
+                Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => AddCreditCardScreen()));
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Adicionar novo cartão'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Widget para construir a lista de cartões
+  Widget _buildCardList(List<CreditCard> cards, BuildContext context, UserDataProvider userDataProvider) {
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemCount: cards.length,
+      itemBuilder: (context, index) {
+        final card = cards[index];
+
+        return Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: card.isPrimary ? AppColors.mainColor : Colors.transparent,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(12),
           ),
-          body: Column(
+          child: Stack(
             children: [
-              // Lista de endereços ou mensagem vazia
-              Expanded(
-                child: addresses.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'Nenhum endereço cadastrado.',
-                          style: TextStyle(color: AppColors.cardTextColor),
-                        ),
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        itemCount: addresses.length,
-                        itemBuilder: (context, index) => _buildAddressCard(
-                          context,
-                          addresses[index],
-                          index,
+              // Cartão visual
+              Card(
+                color: AppColors.backgroundCardTextColor,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        card.brand == 'Visa' || card.brand == 'Mastercard'
+                          ? Icons.credit_card
+                          : Icons.payment,
+                        color: AppColors.buttonsColor,
+                        size: 40,
+                      ),
+                      const SizedBox(width: 18),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('${card.brand} **** ${card.last4Digits}',
+                              style: AppTextStyles.body,
+                              overflow: TextOverflow.ellipsis),
+                            const SizedBox(height: 4),
+                            Text('Expira em ${card.expiryDate}',
+                                style: AppTextStyles.body),
+                          ],
                         ),
                       ),
-              ),
-              // Botão de adicionar novo endereço
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: ElevatedButton.icon(
-                  onPressed: () => _addOrEditAddress(context),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Adicionar novo endereço'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.buttonsColor,
-                    foregroundColor: AppColors.backgroundColor,
-                    minimumSize: const Size.fromHeight(50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                      // Menu de opções
+                      PopupMenuButton<String>(
+                        icon: const Icon(Icons.more_vert, color: AppColors.buttonsColor),
+                        color: Colors.black87,
+                        surfaceTintColor: Colors.black87,
+                        onSelected: (value) {
+                          if (value == 'primary') {
+                            userDataProvider.setPrimaryCard(card);
+                          } else if (value == 'delete') {
+                            _confirmDeleteCard(context, card);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            value: 'primary',
+                            child: Row(
+                              children: [
+                                Icon(card.isPrimary ? Icons.star : Icons.star_border, color: Colors.amber),
+                                const SizedBox(width: 8),
+                                Text(card.isPrimary
+                                    ? 'Cartão principal'
+                                    : 'Definir como principal'),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete, color: Colors.redAccent),
+                                SizedBox(width: 8),
+                                Text('Remover'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
+              // Etiqueta de cartão principal
+              if (card.isPrimary)
+                Positioned(
+                  bottom: 33,
+                  right: 68,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.mainColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      'Principal',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         );
       },
+    );
+  }
+
+  // Confirmação de exclusão de cartão
+  void _confirmDeleteCard(BuildContext context, CreditCard card) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Excluir cartão'),
+        content: const Text('Tem certeza que deseja remover este cartão?'),
+        actions: [
+          TextButton(
+            child: const Text('Cancelar'),
+            onPressed: () => Navigator.pop(ctx),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.buttonsColor),
+            child: const Text('Excluir'),
+            onPressed: () {
+              Provider.of<UserDataProvider>(context, listen: false).removeCreditCard(card);
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Cartão removido com sucesso!')),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
