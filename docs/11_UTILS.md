@@ -10,7 +10,9 @@ Atualmente, a pasta contém:
 ## `frete_utils.dart`
 Este arquivo implementa a lógica de cálculo de frete para os pedidos realizados no app **TechTaste**. 
 O valor do frete é dinâmico e depende da distância (em quilômetros) entre o restaurante e o endereço de entrega do usuário.
+Futuramente, essa função pode ser adaptada para considerar diferentes políticas de frete por restaurante ou baseadas em regiões (CEP, cidade).
 
+---
 ### Função: `calcularFrete`
 ```dart
 
@@ -44,6 +46,6 @@ final frete = calcularFrete(5); // Resultado: 13.0
 ### Justificativa Técnica
 - A função é **pura**, ou seja, não depende de variáveis externas, o que a torna **testável e confiável**
 - Os parâmetros default permitem reutilização com flexibilidade, mantendo lógica padrão centralizada
-- Isolar essa lógica em `utils` favorece a consistência ao longo do app e permite fácil atualização caso a política de frete mude no futuro
+- Isolar essa lógica em `utils` favorece a consistência ao longo do app e permite fácil atualização caso o cálculo do frete mude posteriormente
 
-Este utilitário será utilizado no **Checkout**, para compor o valor final do pedido, juntamente com os itens escolhidos pelo usuário.
+Este utilitário será utilizado no **Checkout**, para compor o valor final do pedido, juntamente com os itens escolhidos pelo usuário. 
