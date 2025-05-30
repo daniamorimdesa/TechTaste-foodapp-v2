@@ -1,5 +1,14 @@
 # Lista e Edição de Endereços do Usuário
 
+| Address List | Edit address top |Edit address bottom | 
+|----------------|------------------------|------------------------|
+| ![account screen](../assets/screenshots/address_list_screenshot.png) | ![account screen mockup](../assets/screenshots/edit_address_top.png) |![account screen mockup](../assets/screenshots/edit_address_bottom.png) |
+
+> ⚠️ **Observação**:  
+> Os dados exibidos nas capturas de tela foram gerados automaticamente para fins de simulação, utilizando a ferramenta gratuita [4Devs - Gerador de Pessoas](https://www.4devs.com.br/computacao).  
+> Nenhuma informação real de usuário foi utilizada.
+
+---
 ## `edit_address_screen.dart`
 
 ### Funcionalidade
