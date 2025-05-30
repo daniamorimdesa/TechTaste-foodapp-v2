@@ -1,4 +1,5 @@
 # Lista e Edição de Endereços do Usuário
+O gerenciamento de endereços no app pode ser acessado por dois fluxos principais: durante o **checkout**, caso o usuário ainda não tenha cadastrado um endereço, e na área da **conta do usuário** (`Account`), onde é possível **visualizar, adicionar, editar e remover** endereços já salvos. Esta documentação trata especificamente da lógica presente na tela de conta, composta pela lista de endereços (`AddressListScreen`) e pelo formulário reutilizável de cadastro/edição (`EditAddressScreen`). Ambos os componentes interagem com o `UserDataProvider`, garantindo que qualquer alteração seja refletida globalmente no aplicativo.
 
 | Address List | Edit address top |Edit address bottom | 
 |----------------|------------------------|------------------------|
