@@ -2,7 +2,7 @@
 
 | Checkout Screen top |  Checkout Screen bottom  |  Checkout Screen finalização  | 
 |----------------|------------------------|------------------------|
-| ![account screen](../assets/screenshots/account_screen.png) | ![account screen mockup](../assets/screenshots/edit_user_data.png) |![account screen mockup](../assets/screenshots/account_screen_mock.png) |
+| ![account screen](../assets/screenshots/checkout_top_screenshot.png) | ![account screen mockup](../assets/screenshots/checkout_bottom_screenshot.png) |![account screen mockup](../assets/screenshots/checkout_finalizado.png) |
 
 > ⚠️ **Observação**:  
 > Os dados exibidos nas capturas de tela foram gerados automaticamente para fins de simulação, utilizando a ferramenta gratuita [4Devs - Gerador de Pessoas](https://www.4devs.com.br/computacao).  
