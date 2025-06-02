@@ -1,6 +1,6 @@
 # Pasta `checkout/`
 
-| Account Screen | Edit User Data | Account Screen Mockup | 
+| Checkout Screen top |  Checkout Screen bottom  |  Checkout Screen finalização  | 
 |----------------|------------------------|------------------------|
 | ![account screen](../assets/screenshots/account_screen.png) | ![account screen mockup](../assets/screenshots/edit_user_data.png) |![account screen mockup](../assets/screenshots/account_screen_mock.png) |
 
