@@ -25,7 +25,7 @@ Este módulo é responsável por gerenciar o **fluxo de checkout**, permitindo q
 - O valor total do pedido mostrado em `order_summary_card.dart` inclui:
   - Subtotal (soma dos valores dos pratos)
   - Taxa de entrega (frete)
-  - Valor do troco esperado para o usuário em caso de paagamento em dinheiro
+  - Valor do troco esperado para o usuário em caso de pagamento em dinheiro
     
 ---
 ## Estrutura de Arquivos
