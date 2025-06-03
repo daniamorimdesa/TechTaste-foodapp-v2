@@ -16,8 +16,6 @@ As telas documentadas aqui são:
 Cada uma dessas telas contribui para garantir que as **informações do pedido estejam completas e corretas antes da finalização**.
 
 ---
----
-
 ## `payment_selection_screen.dart`
 
 ### Funcionalidade
@@ -263,3 +261,143 @@ class _CashChangeScreenState extends State<CashChangeScreen> {
     );
   }
 }
+```
+---
+## `select_credit_card_screen.dart`
+
+### Funcionalidade
+A `CreditCardSelectionScreen` é responsável por exibir ao usuário os cartões de crédito cadastrados e permitir que ele selecione um deles como método de pagamento. Além disso, a tela oferece um botão para adicionar um novo cartão, redirecionando para o formulário correspondente. 
+Ao tocar em um cartão existente:
+- Ele é definido como o cartão selecionado no `UserDataProvider`.
+- A navegação é encerrada com dois pop() para retornar à tela de checkout.
+
+Essa tela garante que o usuário possa alterar rapidamente o cartão utilizado sem sair do fluxo principal do pedido.
+
+---
+### Decisão Técnica
+- **Gerenciamento de Estado com `Provider`**: A tela utiliza o `UserDataProvider` via `Provider.of` para acessar a lista de cartões e definir qual está selecionado. Esse padrão centraliza o estado do usuário e facilita a consistência entre telas.
+- **`ListView` Dinâmico com `Builder`**: A estrutura de lista é feita com `ListView.builder` para escalar bem com múltiplos cartões e incluir, ao final da lista, um botão para adicionar um novo cartão.
+- **Duplo `Navigator.pop`**: O fechamento da tela ocorre com dois `Navigator.pop()` consecutivos, garantindo o retorno à tela de checkout imediatamente após a escolha do cartão.
+
+---
+### Código comentado
+```dart
+// Tela para seleção de cartão de crédito
+class CreditCardSelectionScreen extends StatelessWidget {
+  const CreditCardSelectionScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Acessa os dados do usuário via Provider
+    final userData = Provider.of<UserDataProvider>(context);
+    final cards = userData.creditCards;
+
+    return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
+      appBar: AppBar(
+        title: const Text('Selecionar Cartão'),
+        backgroundColor: AppColors.backgroundColor,
+        foregroundColor: AppColors.highlightTextColor,
+        elevation: 0,
+      ),
+      body: ListView.builder(
+        itemCount: cards.length + 1, // +1 para incluir o botão de adicionar cartão
+        itemBuilder: (context, index) {
+          if (index < cards.length) {
+            final card = cards[index];
+
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              color: AppColors.lightBackgroundColor,
+              elevation: 3,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () {
+                  // Define o cartão como selecionado no provider
+                  userData.setSelectedCard(card);
+
+                  // Fecha esta tela e a anterior (provavelmente tela de método de pagamento)
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.credit_card, color: AppColors.mainColor),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Text(
+                          '**** **** **** ${card.last4Digits}',
+                          style: const TextStyle(
+                            color: AppColors.cardTextColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      // Ícone de confirmação para o cartão atualmente selecionado
+                      if (userData.selectedCard == card)
+                        const Icon(Icons.check, color: AppColors.mainColor),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          } else {
+            // Botão para adicionar um novo cartão
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // Navega para a tela de formulário de novo cartão
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AddCreditCardScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.add),
+                label: const Text('Adicionar novo cartão'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.buttonsColor,
+                  foregroundColor: AppColors.backgroundColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+```
+---
+## `select_address_screen.dart`
+
+### Funcionalidade
+A tela `SelectAddressScreen` permite ao usuário visualizar os endereços previamente cadastrados e selecionar um deles como endereço de entrega. Caso não haja endereços salvos, a tela exibe uma mensagem indicativa. Também é possível adicionar um novo endereço, que será salvo e incluído na lista. Ao tocar em um endereço:
+- Ele é retornado diretamente pela função `Navigator.pop(context, address);`, permitindo à tela anterior (geralmente o checkout) utilizar esse endereço como o selecionado.
+
+---
+### Decisão Técnica
+- **Gerenciamento de Estado com `Provider`**: A tela usa `context.watch<UserDataProvider>()` para obter a lista reativa de endereços, permitindo que a interface se atualize automaticamente ao adicionar novos.
+- **Passagem de Dados com `Navigator.pop`**: A seleção de um endereço utiliza o `Navigator.pop(context, address)` para retornar o endereço selecionado à tela anterior, uma prática comum em formulários e seleções em cascata.
+- **Callback Personalizado via `EditAddressScreen`**: O botão de adicionar endereço redireciona para a tela de edição e utiliza o parâmetro `onSave` como função de callback, atualizando o estado do provider ao salvar um novo endereço.
+
+---
+### Código comentado
+```dart
+// Tela para seleção de cartão de crédito
