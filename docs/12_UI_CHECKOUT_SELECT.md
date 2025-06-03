@@ -134,3 +134,132 @@ class PaymentSelectionScreen extends StatelessWidget {
     );
   }
 }
+```
+---
+## `select_cash_change_screen.dart`
+
+### Funcionalidade
+
+Esta tela permite que o usuário informe com quanto em dinheiro ele pagará, para que o sistema calcule automaticamente o valor do troco necessário. Ela é exibida somente se o usuário escolheu pagar em dinheiro na tela anterior.
+
+---
+### Decisão Técnica
+
+- Utiliza `TextEditingController` para capturar a entrada do usuário.
+- Garante que o valor informado seja válido e suficiente para cobrir o valor total da compra, incluindo a taxa de entrega.
+- Informa erros ao usuário com `SnackBar` caso o valor seja inválido ou insuficiente.
+- Ao confirmar, o valor de troco é salvo no `UserDataProvider` e a navegação retorna duas telas para trás (para concluir o checkout).
+
+---
+### Código comentado
+```dart
+// Tela de seleção de troco em caso de pagamento em dinheiro 
+class CashChangeScreen extends StatefulWidget {
+  const CashChangeScreen({super.key});
+
+  @override
+  State<CashChangeScreen> createState() => _CashChangeScreenState();
+}
+
+class _CashChangeScreenState extends State<CashChangeScreen> {
+  final TextEditingController _controller = TextEditingController(); // Controlador do campo de texto
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final userData = Provider.of<UserDataProvider>(context); // Acesso ao estado global
+
+    return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
+      appBar: AppBar(
+        title: const Text('Troco para quanto?'),
+        backgroundColor: AppColors.backgroundColor,
+        foregroundColor: AppColors.highlightTextColor,
+        elevation: 0,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            // Campo de entrada do valor
+            TextField(
+              controller: _controller,
+              style: const TextStyle(color: AppColors.cardTextColor),
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Valor em reais',
+                labelStyle: const TextStyle(color: AppColors.cardTextColor),
+                filled: true,
+                fillColor: AppColors.lightBackgroundColor,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Botão de confirmação
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.buttonsColor,
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () {
+                // Converte o valor informado pelo usuário
+                final value = double.tryParse(
+                  _controller.text.replaceAll(',', '.'),
+                );
+
+                if (value == null) {
+                  // Valor inválido
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Digite um valor válido')),
+                  );
+                  return;
+                }
+
+                // Calcula total com taxa de entrega
+                final total =
+                    Provider.of<BagProvider>(
+                      context,
+                      listen: false,
+                    ).getSubtotal() +
+                   userData.deliveryFee;
+
+                if (value < total) {
+                  // Valor insuficiente
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'O valor informado é menor que o total de R\$ ${total.toStringAsFixed(2)}.',
+                      ),
+                    ),
+                  );
+                  return;
+                }
+
+                // Tudo certo: armazena valor e volta para o fluxo de checkout
+                userData.setCashChangeValue(value);
+                Navigator.pop(context); // volta para seleção de pagamento
+                Navigator.pop(context); // volta para tela de checkout
+              },
+              child: const Text('Confirmar Troco'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
