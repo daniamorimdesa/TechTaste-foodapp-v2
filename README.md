@@ -96,12 +96,12 @@ flutter run
 ---
 
 ## 📚 Documentação Completa
-A documentação detalhada do projeto está disponível [aqui](docs).
+A documentação detalhada do projeto está disponível [aqui](docs), com explicações sobre a estrutura, organização, lógica das telas e widgets.
 
 ---
 
 ## 📄 Licença
-This project is licensed under the MIT License. See the LICENSE file for details.
+Este projeto está licenciado sob a MIT License.
 
 ---
 
@@ -109,5 +109,5 @@ This project is licensed under the MIT License. See the LICENSE file for details
 ```
 Daniela Amorim de Sá
 Engenheira Eletrônica | Sistemas Embarcados & IoT  
-Projeto desenvolvido como parte da Imersão Mobile da Alura (abril - 2025).
+Projeto desenvolvido como parte da Imersão Mobile da Alura (abril/maio - 2025) e expandido como portfólio técnico.
 ```
