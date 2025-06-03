@@ -400,4 +400,94 @@ A tela `SelectAddressScreen` permite ao usuário visualizar os endereços previa
 ---
 ### Código comentado
 ```dart
-// Tela para seleção de cartão de crédito
+// Tela responsável por permitir a seleção de um endereço
+class SelectAddressScreen extends StatelessWidget {
+  const SelectAddressScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Obtém a lista de endereços cadastrados do usuário
+    final addressList = context.watch<UserDataProvider>().addresses;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Selecionar Endereço'),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: addressList.isEmpty
+                // Caso não haja endereços, mostra mensagem
+                ? const Center(child: Text('Nenhum endereço cadastrado.'))
+                // Caso haja endereços, exibe em formato de lista
+                : ListView.builder(
+                    itemCount: addressList.length,
+                    padding: const EdgeInsets.all(16),
+                    itemBuilder: (context, index) {
+                      final address = addressList[index];
+
+                      return Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(16),
+                          title: Text(
+                            '${address.street}, ${address.number}',
+                            style: AppTextStyles.body,
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('${address.neighborhood}, ${address.city} - ${address.state}'),
+                              Text('${address.cep} — ${address.label}'),
+                              if (address.description.isNotEmpty)
+                                Text(address.description),
+                            ],
+                          ),
+                          trailing: const Icon(Icons.chevron_right),
+                          // Retorna o endereço selecionado ao fechar a tela
+                          onTap: () {
+                            Navigator.pop(context, address);
+                          },
+                        ),
+                      );
+                    },
+                  ),
+          ),
+          // Botão para adicionar um novo endereço
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EditAddressScreen(
+                      // Callback chamado ao salvar novo endereço
+                      onSave: (newAddress) {
+                        context.read<UserDataProvider>().addAddress(newAddress);
+                      },
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Adicionar novo endereço'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.buttonsColor,
+                foregroundColor: AppColors.backgroundColor,
+                minimumSize: const Size.fromHeight(50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
