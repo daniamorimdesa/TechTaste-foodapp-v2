@@ -16,6 +16,12 @@ As telas documentadas aqui são:
 Cada uma dessas telas contribui para garantir que as **informações do pedido estejam completas e corretas antes da finalização**.
 
 ---
+
+| payment_selection_screen |  select_cash_change_screen  |
+|----------------|------------------------|
+| ![account screen](../assets/screenshots/select_payment_checkout.png) | ![account screen mockup](../assets/screenshots/select_cash_change_checkout.png) |
+
+---
 ## `payment_selection_screen.dart`
 
 ### Funcionalidade
@@ -263,6 +269,12 @@ class _CashChangeScreenState extends State<CashChangeScreen> {
 }
 ```
 ---
+| select_credit_card_screen |  select_address_screen  |
+|----------------|------------------------|
+| ![account screen](../assets/screenshots/select_credit_card_checkout.png) | ![account screen mockup](../assets/screenshots/select_address_checkout.png) |
+
+---
+
 ## `select_credit_card_screen.dart`
 
 ### Funcionalidade
