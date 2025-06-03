@@ -104,9 +104,17 @@ class UserDataProvider with ChangeNotifier {
 
   double _cashChangeValue = 0.0; // valor de troco
   double get cashChangeValue => _cashChangeValue;
+  double _deliveryFee = 0.0;
+
+  double get deliveryFee => _deliveryFee;
 
   void setCashChangeValue(double value) {
     _cashChangeValue = value;
+    notifyListeners();
+  }
+
+  void setDeliveryFee(double fee) {
+    _deliveryFee = fee;
     notifyListeners();
   }
 
