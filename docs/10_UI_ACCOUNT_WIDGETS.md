@@ -8,7 +8,6 @@ O componente `UserSectionCard` é um widget reutilizável responsável por estru
 É projetado para ser altamente reutilizável dentro de `account_screen.dart` e outras telas relacionadas à conta do usuário, mantendo consistência visual e promovendo o uso de boas práticas de composição de widgets.
 
 ---
-
 ### Decisão Técnica
 - Utilização de `StatelessWidget` por não haver estado interno necessário.
 - Estilo consistente com o design do app: utiliza `AppColors` e `AppTextStyles` para manter a identidade visual.
@@ -16,7 +15,6 @@ O componente `UserSectionCard` é um widget reutilizável responsável por estru
 - A estrutura `Container > Column > Row + child` foi escolhida para manter flexibilidade e clareza na organização dos elementos visuais.
 
 ---
-
 ### Código comentado
 
 ```dart
