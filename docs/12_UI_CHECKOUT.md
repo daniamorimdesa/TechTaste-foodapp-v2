@@ -91,6 +91,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     // Calcula o frete com base na distância do restaurante
     final distance = widget.restaurant.distance;
     final deliveryFee = calcularFrete(distance);
+    userData.setDeliveryFee(deliveryFee);
+
 
     final total = subtotal + deliveryFee;
 
