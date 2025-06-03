@@ -80,7 +80,7 @@ class _CashChangeScreenState extends State<CashChangeScreen> {
                       context,
                       listen: false,
                     ).getSubtotal() +
-                    5.0; // Adiciona taxa de entrega
+                    userData.deliveryFee; // Adiciona taxa de entrega
 
                 if (value < total) {
                   ScaffoldMessenger.of(context).showSnackBar(
