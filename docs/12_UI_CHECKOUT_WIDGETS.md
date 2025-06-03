@@ -311,3 +311,119 @@ class PaymentMethodCard extends StatelessWidget {
 }
 ```
 ---
+## `address_card.dart`
+
+### Funcionalidade
+O widget `AddressCard` exibe o endereço de entrega selecionado pelo usuário no processo de finalização da compra. Caso nenhum endereço esteja cadastrado, o cartão convida o usuário a selecionar um. Ele também é interativo, permitindo que o usuário cadastre um endereço ao tocar no componente.
+
+---
+### Decisão Técnica
+- **Validação de endereço vazio**: A getter `isAddressEmpty` centraliza a lógica para identificar se os dados de endereço estão preenchidos, simplificando a legibilidade do `build`.
+- **Renderização condicional**: O conteúdo do cartão muda com base na existência ou não de um endereço, adaptando-se dinamicamente.
+- **Estilização consistente**: Usa as cores e estilos definidos na identidade visual da aplicação (`AppColors`), mantendo a coerência com os demais cards da interface.
+- **Interatividade com `InkWell`**: Permite resposta visual ao toque, facilitando a navegação para cadastro ou seleção de endereço.
+
+---
+### Código comentado
+
+```dart
+// Widget que exibe o endereço selecionado para entrega(ou notifica usuário para cadastrar um)
+class AddressCard extends StatelessWidget {
+  // Função executada ao tocar no card (abrir tela de endereços cadastrados)
+  final VoidCallback onTap;
+
+  // Dados do endereço a ser exibido
+  final Address address;
+
+  const AddressCard({super.key, required this.onTap, required this.address});
+
+  /// Verifica se o endereço está vazio (sem rua e número)
+  bool get isAddressEmpty {
+    return address.street.isEmpty && address.number.isEmpty;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: AppColors.backgroundCardTextColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Row(
+            children: [
+              // Ícone de localização
+              const Icon(
+                Icons.location_on,
+                color: AppColors.cardTextColor,
+                size: 32,
+              ),
+              const SizedBox(width: 16),
+
+              // Conteúdo do endereço ou mensagem de seleção
+              Expanded(
+                child: isAddressEmpty
+                    ? Text(
+                        'Selecionar endereço',
+                        style: const TextStyle(
+                          color: AppColors.cardTextColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Rua e número
+                          Text(
+                            '${address.street}, ${address.number}',
+                            style: const TextStyle(
+                              color: AppColors.cardTextColor,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+
+                          // Bairro, cidade e estado
+                          Text(
+                            '${address.neighborhood}, ${address.city} - ${address.state}',
+                            style: const TextStyle(
+                              color: AppColors.cardTextColor,
+                              fontSize: 16,
+                            ),
+                          ),
+
+                          // Complemento, se existir
+                          if (address.description.isNotEmpty)
+                            Text(
+                              address.description,
+                              style: const TextStyle(
+                                color: AppColors.cardTextColor,
+                                fontSize: 14,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                        ],
+                      ),
+              ),
+
+              // Ícone de seta para indicar interatividade
+              const CircleAvatar(
+                backgroundColor: AppColors.mainColor,
+                child: Icon(
+                  Icons.chevron_right,
+                  color: AppColors.backgroundColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+---
