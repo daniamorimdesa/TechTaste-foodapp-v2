@@ -1,5 +1,9 @@
 # Pasta `checkout/widgets/`
 
+| BagItemsList, PaymentMethodCard e CleanButton |  AddressCard, OrderSummaryCard e CleanButton  |
+|----------------|------------------------|
+| ![account screen](../assets/screenshots/checkout_top_screenshot.png) | ![account screen mockup](../assets/screenshots/checkout_bottom_screenshot.png) |
+
 ## `bag_items_list.dart`
 
 ### Funcionalidade
