@@ -1,4 +1,4 @@
-# pasta `account/widgets/`
+# Pasta `account/widgets/`
 
 ## `user_section_card.dart`
 
