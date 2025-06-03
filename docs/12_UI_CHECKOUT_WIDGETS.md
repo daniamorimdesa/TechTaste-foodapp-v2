@@ -427,3 +427,207 @@ class AddressCard extends StatelessWidget {
 }
 ```
 ---
+## `order_summary_card.dart`
+
+### Funcionalidade
+O widget `OrderSummaryCard` exibe um resumo financeiro do pedido na tela de checkout. Ele mostra:
+- O valor do pedido (subtotal)
+- A taxa de entrega
+- O valor total
+- Informações adicionais de pagamento em dinheiro, caso informadas
+- Um botão de confirmação do pedido
+
+Esse componente é essencial para que o usuário revise os valores antes de concluir a compra.
+
+---
+### Decisão Técnica
+- Utiliza o `Card` com `RoundedRectangleBorder` para manter a identidade visual consistente com outros cards da UI.
+- O botão usa `ElevatedButton.icon` com ícone da `FontAwesome` para destacar a ação de finalizar o pedido.
+- Foi adicionado um `if` para condicionalmente mostrar informações de pagamento em dinheiro (evitando layout desnecessário).
+- Todos os textos seguem as diretrizes de estilo do projeto, com cores e tamanhos definidos em `AppColors` e `AppTextStyles`.
+- Os valores são apresentados com 2 casas decimais (t`oStringAsFixed(2)`), garantindo clareza no valor exibido ao usuário.
+
+
+---
+### Código comentado
+
+```dart
+// Mostra os valores do pedido resumidos
+class OrderSummaryCard extends StatelessWidget {
+  // Valores financeiros do pedido
+  final double subtotal;
+  final double deliveryFee;
+  final double total;
+
+  // Callback acionado ao confirmar o pedido
+  final VoidCallback onOrder;
+
+  // Valor em dinheiro que o cliente usará para pagar (opcional)
+  final double? cashChangeValue;
+
+  const OrderSummaryCard({
+    super.key,
+    required this.subtotal,
+    required this.deliveryFee,
+    required this.total,
+    required this.onOrder,
+    this.cashChangeValue,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      // Card com visual padronizado
+      color: AppColors.backgroundCardTextColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+
+            // Linha: valor do pedido
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Pedido:',
+                  style: TextStyle(
+                    color: AppColors.cardTextColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'R\$ ${subtotal.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    color: AppColors.cardTextColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 8),
+
+            // Linha: taxa de entrega
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Entrega:',
+                  style: TextStyle(
+                    color: AppColors.cardTextColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'R\$ ${deliveryFee.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    color: AppColors.cardTextColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+
+            const Divider(color: AppColors.mainColor),
+
+            // Linha: total do pedido
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Total:',
+                  style: TextStyle(
+                    color: AppColors.mainColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'R\$ ${total.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    color: AppColors.mainColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+
+            // Se o cliente selecionou pagamento em dinheiro:
+            if (cashChangeValue != null && cashChangeValue! > 0) ...[
+              const Divider(color: AppColors.mainColor),
+
+              // Valor em dinheiro que será pago
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Pagamento em dinheiro:',
+                    style: TextStyle(
+                      color: AppColors.highlightTextColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'R\$ ${cashChangeValue!.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      color: AppColors.highlightTextColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 4),
+
+              // Troco que o entregador precisa devolver
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Troco a receber:',
+                    style: TextStyle(
+                      color: AppColors.cardTextColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'R\$ ${(cashChangeValue! - total).toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      color: AppColors.cardTextColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            const SizedBox(height: 24),
+
+            // Botão de finalização do pedido
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.mainColor,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(32),
+                  ),
+                ),
+                onPressed: onOrder,
+                icon: const FaIcon(FontAwesomeIcons.wallet),
+                label: Text('Pedir', style: AppTextStyles.button),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
