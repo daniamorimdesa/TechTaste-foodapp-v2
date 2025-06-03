@@ -34,6 +34,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final deliveryFee = calcularFrete(
       distance,
     ); // Calcula o frete com base na distância
+    userData.setDeliveryFee(deliveryFee);
+    
     final total = subtotal + deliveryFee;
     final addressList = userData.addresses;
     final hasPrimary = addressList.any((a) => a.isPrimary);
