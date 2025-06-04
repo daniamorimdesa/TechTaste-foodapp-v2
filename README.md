@@ -1,8 +1,5 @@
 # 🍽️ TechTaste – Food Delivery App (Versão 2.0)
 
-<img src="assets/banner_techtaste.png" alt="TechTaste banner" style="width:100%;" />
-
-
 **TechTaste v2** é a continuação e expansão do app desenvolvido na **Imersão Mobile da Alura (abril - 2025)**. Esta nova versão traz funcionalidades avançadas, refatorações no código e aprimoramentos de UI/UX que simulam com mais fidelidade o fluxo de um app real de delivery.
 
  ![Splash](assets/screenshots/demo.gif)
